@@ -1,12 +1,34 @@
 import Head from "next/head"
+import { useEffect, useState } from "react";
 import Seo from "../components/Seo"
 //🙂 helmet에 그 많은 script를 우겨넣던 시간은 대체 무엇이었는가?
 
+const API_KEY="ef84351b94903c34ce113fddd7775209";
+
 export default function Home(){
-    return (<div>
+    const [movies, setMovies]=useState([]);
+    useEffect(()=>{
+        (async()=>{
+            const response= await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
+            const {results}=await response.json();
+            console.log(results);
+            setMovies(results); //이렇게 하지 말랬는데.....
+        })();
+       
+    },[])
+
+    return (
+        <div>
             <Seo title="Home"/>
-        <h1>Home</h1>
-    </div>)
+            <h1>Home</h1>
+        {!movies && <h4>Loading...</h4>}
+
+            {movies?.map((movie:any) =>(
+            <div key={movie.id}>
+            <h4>{movie.original_title}</h4>
+            </div>))}
+    </div>
+    )
 }
 
 //export default를 꼭 붙여야 한다.
