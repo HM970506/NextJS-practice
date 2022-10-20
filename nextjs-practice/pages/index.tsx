@@ -1,8 +1,10 @@
-import NavBar from "../components/NavBar";
+import Head from "next/head"
+import Seo from "../components/Seo"
+//🙂 helmet에 그 많은 script를 우겨넣던 시간은 대체 무엇이었는가?
 
 export default function Home(){
     return (<div>
-
+            <Seo title="Home"/>
         <h1>Home</h1>
     </div>)
 }
