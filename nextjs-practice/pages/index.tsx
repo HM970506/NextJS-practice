@@ -3,14 +3,12 @@ import { useEffect, useState } from "react";
 import Seo from "../components/Seo"
 //🙂 helmet에 그 많은 script를 우겨넣던 시간은 대체 무엇이었는가?
 
-const API_KEY="ef84351b94903c34ce113fddd7775209";
 
 export default function Home(){
     const [movies, setMovies]=useState([]);
     useEffect(()=>{
         (async()=>{
-            const response= await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
-            const {results}=await response.json();
+            const {results}=await (await fetch(`/api/movies`)).json();
             console.log(results);
             setMovies(results); //이렇게 하지 말랬는데.....
         })();
