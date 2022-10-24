@@ -4,6 +4,7 @@ import NavBar from "../components/NavBar";
 import Layout from "./Layout";
 
 //여기서는 Layout안에 있는 것들이 children이 된다!
+//pageProps에 getServerSideProps()의 리턴인 props:result가 들어간다
 export default function MyApp({Component, pageProps}:any){
     return <Layout>
         <Component {...pageProps}/>
