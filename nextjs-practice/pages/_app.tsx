@@ -11,3 +11,5 @@ export default function MyApp({Component, pageProps}:any){
         <div>이곳에 전역적인 내용이 들어갑니다</div>
     </Layout>
 }
+
+//home에서는 ssr (html다 만들고 감), about에서는 csr(html 나중에 js로 만듦)

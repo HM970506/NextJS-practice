@@ -1,4 +1,6 @@
 import Head from "next/head"
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Seo from "../components/Seo"
 //🙂 helmet에 그 많은 script를 우겨넣던 시간은 대체 무엇이었는가?
@@ -12,14 +14,29 @@ import Seo from "../components/Seo"
 
 
 export default function Home({results}:any){
+    const router= useRouter();
+
+    //link와 a태그는 텍스트만 담고 있어야 한다.
+    //이미지 등을 넣고 싶은 땐 router의 push기능을 이용하자
+    const onClick=(id:string)=>{
+        router.push(`/movies/${id}`);
+    }
     return (
         <div>
             <Seo title="Home"/>
             <h1>Home</h1>
             {results?.map((movie:any) =>(
-            <div key={movie.id}>
-            <h4>{movie.original_title}</h4>
-            </div>))}
+                <div onClick={()=>onClick(movie.id)}>
+                    <div>영화 이미지 들어가는 곳</div>
+
+                <div key={movie.id}>
+                <Link href={`/movies/${movie.id}`} key={movie.id}>
+                    <a>   <h4>{movie.original_title}</h4></a>
+                    </Link>
+                </div>
+          
+            </div>
+            ))}
     </div>
     )
 }
