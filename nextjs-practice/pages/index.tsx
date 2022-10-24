@@ -18,15 +18,19 @@ export default function Home({results}:any){
 
     //link와 a태그는 텍스트만 담고 있어야 한다.
     //이미지 등을 넣고 싶은 땐 router의 push기능을 이용하자
-    const onClick=(id:string)=>{
-        router.push(`/movies/${id}`);
+    const onClick=(id:string, title:string)=>{
+        router.push({  //놀랍게도!!! string이 아니라 객체를 push해줄수도있다...!!!
+            pathname: `/movies/${id}`,
+        query: {title: title} //이 내용이 get처럼 들어간당
+        }, `/movies/${id}`); //마스킹 기능. 실제로는 이 url이 보인다
+
     }
     return (
         <div>
             <Seo title="Home"/>
             <h1>Home</h1>
             {results?.map((movie:any) =>(
-                <div onClick={()=>onClick(movie.id)}>
+                <div onClick={()=>onClick(movie.id, movie.title)}>
                     <div>영화 이미지 들어가는 곳</div>
 
                 <div key={movie.id}>

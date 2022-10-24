@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 export default function Detail(){
     const router=useRouter();
     console.log(router) //여기에서 query라는 속성에 id:url끝값이 들어있다!
-    return "detail";
+    return <div>
+        <h4>{router.query.title || ""}</h4>
+    </div>
 }
 
