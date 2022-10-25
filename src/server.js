@@ -26,4 +26,15 @@ const wss = new WebSocket.Server({ server });
 //이렇게 하면 두 서버를 같이 돌릴 수 있어요
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
 
+function handleConnection(socket) {
+    console.log(socket);
+  }
+wss.on("connection", handleConnection);
+//event 처리처럼 서버.on으로 "이벤트", 실행함수를 적용할 수 있어요
+
+
+  
+//서버 실행
 server.listen(3000, handleListen);
+
+
