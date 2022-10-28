@@ -12,7 +12,8 @@ app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", (_, res) => res.render("home"));
 app.get("/*", (_, res) => res.redirect("/"));
-//라우터 부분
+//라우터 부분.
+//request 를 _로 표시할 수 있어요
 
 console.log("서버를 시작합니당");
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
@@ -27,10 +28,15 @@ const wss = new WebSocket.Server({ server });
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
 
 function handleConnection(socket) {
-    console.log(socket);
+    console.log("서버: 브라우저 연결");
+
+    socket.on("close", ()=>{console.log("브라우저 닫힘")});
+    socket.on("message",(m)=>{console.log("서버가 받은 메시지: ", m.data)});
+    socket.send("서버가 보낸 메시지입니다");
   }
 wss.on("connection", handleConnection);
 //event 처리처럼 서버.on으로 "이벤트", 실행함수를 적용할 수 있어요
+
 
 
   
