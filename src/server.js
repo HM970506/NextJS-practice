@@ -27,12 +27,17 @@ const wss = new WebSocket.Server({ server });
 //이렇게 하면 두 서버를 같이 돌릴 수 있어요
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
 
-function handleConnection(socket) {
-    console.log("서버: 브라우저 연결");
+const sockets=[];
 
-    socket.on("close", ()=>{console.log("브라우저 닫힘")});
-    socket.on("message",(m)=>{console.log("서버가 받은 메시지: ", m.data)});
+function handleConnection(socket) {
+  sockets.push(socket);
+    console.log("서버: 브라우저 연결");
     socket.send("서버가 보낸 메시지입니다");
+    socket.on("close", ()=>{console.log("브라우저 닫힘")});
+
+    //웹소켓 버전이 8이 되면서, m으로만 보내면 blob 형태로 보내진다.
+    //toString으로 변환하여 보내주자
+    socket.on("message", (m)=>{sockets.forEach((s)=>s.send(m.toString()))});
   }
 wss.on("connection", handleConnection);
 //event 처리처럼 서버.on으로 "이벤트", 실행함수를 적용할 수 있어요
