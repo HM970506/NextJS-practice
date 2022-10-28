@@ -25,7 +25,15 @@ const wsServer = SocketIO(httpServer);
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
 
 wsServer.on("connection", (socket) => {
-  console.log(socket);
+  //enter_room 키워드를 받아서
+  socket.on("enter_room", (msg, done) => {
+    console.log(msg);//msg는 출력하고
+
+    //넣은 함수는 10초후에 실행시킨다
+    setTimeout(() => {
+      done();
+    }, 10000);
+  });
 });
   
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
