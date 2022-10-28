@@ -9,13 +9,37 @@ room.hidden=true;
 
 let roomName; //룸네임을 받을 겁니다
 
+function addMessage(message) { //ul에 메시지를 추가해주는 함수
+    const ul = room.querySelector("ul");
+    const li = document.createElement("li");
+    li.innerText = message;
+    ul.appendChild(li);
+  }
+
+function handleMessageSubmit(event) { //메시지용 함수..처음에 했던 거랑 같다!
+    event.preventDefault();
+    const input = room.querySelector("input");
+    const value = input.value;
+
+    //서버에 메시지와 해당 메시지가 보일 룸 이름, 그리고 실행될 함수를 보냅니다
+    socket.emit("new_message", input.value, roomName, () => { // 클->서 메시지 보냄
+      addMessage(`You: ${value}`);
+    });
+
+    input.value = "";
+  }
+
+  socket.on("new_message", addMessage); // 서->클 메시지 받음
+
+
 function showRoom(){ //서버에 방 이름이 전달되면 방이름을 변경하는 함수
-    welcome.hidden=true; //숨겨
-    room.hidden = false; //꺼내
+    welcome.hidden=true; 
+    room.hidden = false; 
 
     const h3 = room.querySelector("h3");
-    h3.innerText = `Room ${roomName}`; //컴포넌트화 하고싶어~~
-
+    h3.innerText = `Room ${roomName}`; 
+    const form = room.querySelector("form"); //메시지 보내기 버튼에 동작 추가
+    form.addEventListener("submit", handleMessageSubmit);
 }
 
 function handleRoomSubmit(event) {
@@ -28,3 +52,12 @@ function handleRoomSubmit(event) {
   }
   
   form.addEventListener("submit", handleRoomSubmit);
+
+  socket.on("welcome", () => { //welcome 키워드 받음
+    addMessage("someone joined!");
+  });
+  
+  socket.on("bye", () => { //bye 키워드 받음
+    addMessage("someone left ㅠㅠ");
+  });
+  
