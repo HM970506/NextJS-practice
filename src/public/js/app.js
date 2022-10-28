@@ -2,19 +2,28 @@ const socket = io();
 
 const welcome = document.getElementById("welcome");
 const form = welcome.querySelector("form");
+const room = document.getElementById("room");
+
+room.hidden=true;
+//우선 표시되지 않게 하고,
+
+let roomName; //룸네임을 받을 겁니다
+
+function showRoom(){ //서버에 방 이름이 전달되면 방이름을 변경하는 함수
+    welcome.hidden=true; //숨겨
+    room.hidden = false; //꺼내
+
+    const h3 = room.querySelector("h3");
+    h3.innerText = `Room ${roomName}`; //컴포넌트화 하고싶어~~
+
+}
 
 function handleRoomSubmit(event) {
     event.preventDefault();
     const input = form.querySelector("input");
-    //여기까지는 예전에 했던 것과 같은내용.
-    //이제 밑에서 socket.send가 아니라 emit이라는 걸 씁니다!
-    socket.emit("enter_room", { payload: input.value }, () => {console.log("10초마다 출력됩니다!");});
-//socket.emit('some event', { someProperty: 'some value'}, );
-//공식 문서의 props 가이드..
-//세번째 인자로 들어간 함수는 뭐지...??뭐가 들어간 거야..?
-//그냥 넣고 싶은 걸 계속 props로 전달할 수 있나보다..! 꼭 객체형태에 넣지 않아도 괜찮은 듯?
-    //단, 함수는 꼭 인자의 마지막에 들어가야 한다!
-    //이것은 백엔드단이 아닌 프론트엔드단에 실행되는 코드.. 백엔드단에서 실행되면 보안 문제가 생기니까!
+    socket.emit("enter_room", input.value, showRoom);  //서버로 키워드와 입력한 방이름과 함수를 보냅니다
+    roomName = input.value; //룸네임을 반영해 줍시다..리액트 하고 싶어잇
+    
     input.value = "";
   }
   
