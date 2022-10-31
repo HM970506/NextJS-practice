@@ -34,6 +34,13 @@ function publicRooms() {
 }
 
 
+//어댑터를 써보자.
+//어댑터를 통해 여러 개의 서버를 하나로 연결할 수 있다.
+function countRoom(roomName){
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size; //set
+}
+
+
 
 //이렇게 하면 두 서버를 같이 돌릴 수 있어요
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
@@ -44,8 +51,10 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
   });
 
   let nickName="익명";
-  socket.on("enter_room", (roomName, snickName, done) => { //해당 키워드가 도착하면
+  let roomName="";
+  socket.on("enter_room", (sroomName, snickName, done) => { //해당 키워드가 도착하면
     nickName=snickName;
+    roomName=sroomName;
     let startRoom=socket.id;
     console.log("입장 전 소켓 룸 목록:", socket.rooms);
     socket.join(roomName);  //roOName 방에 들어가는 메서드...
@@ -54,7 +63,7 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
     
     done(); //받아온 함수를 실행시키기
     
-    socket.to(roomName).emit("welcome", nickName);
+    socket.to(roomName).emit("welcome", nickName, countRoom(roomName));
     //그리고 해당 이름의 룸에 welcome 키워드를 보냄
 
     wsServer.sockets.emit("room_change", publicRooms());
@@ -62,7 +71,8 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
   });
 
   socket.on("disconnecting", () => { //연결이 끊기면 연결된 다른 모든 룸에 bye를 남기고 감.
-    socket.rooms.forEach((room) => socket.to(room).emit("bye", nickName));
+    socket.rooms.forEach((room) =>
+     socket.to(room).emit("bye", nickName, countRoom(roomName)-1));
   });
 
 //disconnecting : 브라우져는 이미 닫았지만 아직 연결이 끊어지지 않은 그 찰나에 발생하는 이벤트 (그래서 room 정보가 살아있음)

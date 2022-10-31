@@ -57,11 +57,15 @@ function handleRoomSubmit(event) {
   
   form.addEventListener("submit", handleRoomSubmit);
 
-  socket.on("welcome", (nownickName) => { //welcome 키워드 받음
+  socket.on("welcome", (nownickName, newCount) => { //welcome 키워드 받음
+    const h3 = room.querySelector("h3");
+    h3.innerText = `Room ${roomName} (${newCount})`;
     addMessage(`${nownickName} joined!`);
   });
   
-  socket.on("bye", (nownickName) => { //bye 키워드 받음
+  socket.on("bye", (nownickName, newCount) => { //bye 키워드 받음
+    const h3 = room.querySelector("h3");
+    h3.innerText = `Room ${roomName} (${newCount})`;
     addMessage(`${nownickName} left ㅠㅠ`);
   });
   
