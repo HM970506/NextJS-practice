@@ -47,7 +47,7 @@ function handleRoomSubmit(event) {
     event.preventDefault();
     const input1 = document.getElementById("roomname");
     const input2 = document.getElementById("nickname");
-    socket.emit("enter_room",input1.value,  showRoom);  //서버로 키워드와 입력한 방이름과 함수를 보냅니다
+    socket.emit("enter_room",input1.value,  input2.value,showRoom);  //서버로 키워드와 입력한 방이름과 함수를 보냅니다
     roomName = input1.value;
     nickName = input2.value;
     
@@ -57,11 +57,22 @@ function handleRoomSubmit(event) {
   
   form.addEventListener("submit", handleRoomSubmit);
 
-  socket.on("welcome", () => { //welcome 키워드 받음
-    addMessage("someone joined!");
+  socket.on("welcome", (nownickName) => { //welcome 키워드 받음
+    addMessage(`${nownickName} joined!`);
   });
   
-  socket.on("bye", () => { //bye 키워드 받음
-    addMessage("someone left ㅠㅠ");
+  socket.on("bye", (nownickName) => { //bye 키워드 받음
+    addMessage(`${nownickName} left ㅠㅠ`);
   });
   
+  socket.on("room_change", (rooms) => { //rome change 키워드 받음
+    const roomList = document.getElementById("openroom");
+    roomList.innerHTML = "";
+    if (rooms.length === 0) return; //방이 한개도 없으면 빈공간으로 만들기
+
+    rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+    });
+});

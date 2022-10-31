@@ -20,6 +20,20 @@ console.log("서버를 시작합니당");
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
+function publicRooms() {
+  const { sockets: {adapter: { sids, rooms },  },  } = wsServer;
+   //ws서버에서 sid목록(개인방) 룸 목록(모든 방) 꺼내오기
+  const publicRooms = [];
+
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) { //sid에서 키를 찾을 수 없다면(개인방이 아니라면) 공공방.
+      publicRooms.push(key);
+    }
+  });
+  return publicRooms;
+}
+
+
 
 //이렇게 하면 두 서버를 같이 돌릴 수 있어요
 //하지만 ws서버 하나만 만들어도 괜찮긴 해요
@@ -29,8 +43,9 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
     console.log(`Socket Event: ${event}`);
   });
 
-  socket.on("enter_room", (roomName, done) => { //해당 키워드가 도착하면
-    
+  let nickName="익명";
+  socket.on("enter_room", (roomName, snickName, done) => { //해당 키워드가 도착하면
+    nickName=snickName;
     let startRoom=socket.id;
     console.log("입장 전 소켓 룸 목록:", socket.rooms);
     socket.join(roomName);  //roOName 방에 들어가는 메서드...
@@ -39,18 +54,28 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
     
     done(); //받아온 함수를 실행시키기
     
-    socket.to(roomName).emit("welcome");
+    socket.to(roomName).emit("welcome", nickName);
     //그리고 해당 이름의 룸에 welcome 키워드를 보냄
+
+    wsServer.sockets.emit("room_change", publicRooms());
+    //방을 새로 들어왔으니 공공룸 목록을 업데이트
   });
 
   socket.on("disconnecting", () => { //연결이 끊기면 연결된 다른 모든 룸에 bye를 남기고 감.
-    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+    socket.rooms.forEach((room) => socket.to(room).emit("bye", nickName));
   });
-//disconnect : 연결이 완전히 끊어졌을때 발생하는 이벤트 (room 정보가 비어있음)
+
 //disconnecting : 브라우져는 이미 닫았지만 아직 연결이 끊어지지 않은 그 찰나에 발생하는 이벤트 (그래서 room 정보가 살아있음)
   
+  socket.on("disconnect", () => { //룸을 나갔을 때 실행해준다
+    wsServer.sockets.emit("room_change", publicRooms());
+  });
 
-  socket.on("new_message", (msg, room, done) => { //새 메시지 오면 룸에 메시지 보냄
+//disconnect : 연결이 완전히 끊어졌을때 발생하는 이벤트 (room 정보가 비어있음)
+
+
+
+  socket.on("new_message", (msg, room) => { //새 메시지 오면 룸에 메시지 보냄
     
     socket.broadcast.to(room).emit("new_message", msg);
    // done(); //메시지 추가 함수
