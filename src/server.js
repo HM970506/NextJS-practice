@@ -51,10 +51,21 @@ wsServer.on("connection", (socket) => { //커넥션이 되면
   
 
   socket.on("new_message", (msg, room, done) => { //새 메시지 오면 룸에 메시지 보냄
-    socket.to(room).broadcast.emit("new_message", msg);
-    done(); //메시지 추가 함수
+    
+    socket.broadcast.to(room).emit("new_message", msg);
+   // done(); //메시지 추가 함수
   });
 });
+
+/*
+
+socket.broadcast.emit()
+이벤트 데이터가 발신자를 제외한 모든 소켓에만 브로드캐스트
+
+socket.to()
+이벤트가 지정된 방에 참가한 클라이언트에게만 브로드캐스트
+
+*/
   
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 //서버 실행

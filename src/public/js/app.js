@@ -7,7 +7,8 @@ const room = document.getElementById("room");
 room.hidden=true;
 //우선 표시되지 않게 하고,
 
-let roomName; //룸네임을 받을 겁니다
+let roomName; 
+let nickName;
 
 function addMessage(message) { //ul에 메시지를 추가해주는 함수
     const ul = room.querySelector("ul");
@@ -22,7 +23,7 @@ function handleMessageSubmit(event) { //메시지용 함수..처음에 했던 �
     const value = input.value;
 
     //서버에 메시지와 해당 메시지가 보일 룸 이름, 그리고 실행될 함수를 보냅니다
-    socket.emit("new_message", input.value, roomName, () => { // 클->서 메시지 보냄
+    socket.emit("new_message", `${nickName}: ${input.value}`, roomName, () => { // 클->서 메시지 보냄
       addMessage(`You: ${value}`);
     });
 
@@ -44,11 +45,14 @@ function showRoom(){ //서버에 방 이름이 전달되면 방이름을 변경�
 
 function handleRoomSubmit(event) {
     event.preventDefault();
-    const input = form.querySelector("input");
-    socket.emit("enter_room", input.value, showRoom);  //서버로 키워드와 입력한 방이름과 함수를 보냅니다
-    roomName = input.value; //룸네임을 반영해 줍시다..리액트 하고 싶어잇
+    const input1 = document.getElementById("roomname");
+    const input2 = document.getElementById("nickname");
+    socket.emit("enter_room",input1.value,  showRoom);  //서버로 키워드와 입력한 방이름과 함수를 보냅니다
+    roomName = input1.value;
+    nickName = input2.value;
     
-    input.value = "";
+    input1.value = "";
+    input2.value = "";
   }
   
   form.addEventListener("submit", handleRoomSubmit);
