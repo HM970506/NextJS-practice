@@ -1,6 +1,7 @@
 
 import HeadTest from "../components/headTest";
 import PropsTest from "../components/propsTest";
+import Query from "./query";
 
 
 export default function HomePage() {
